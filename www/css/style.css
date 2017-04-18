@@ -1,0 +1,15 @@
+body {
+  font-size: 15px;
+  text-align: center;
+}
+
+#title{
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+
+.parameter-group{
+  width : 250px;
+  margin: 0 auto;
+  margin-top: 2%;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Light Remote</title>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="js/script.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+
+    </head>
+
+    <body>
+        <h1 id="title">Light Remote</h1>
+        <div class="parameter-group">
+          <div class="input-group">
+            <input type="text" id="input-brightness" class="form-control" placeholder="Change brightness">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" id="btn-brightness">ok</button>
+            </span>
+          </div>
+          <div> brightness : <b id="brightness"> 0 </b> % </div>
+        </div>
+
+        <div class="parameter-group">
+          <div class="input-group">
+            <input type="text" id="input-peopleInside" class="form-control" placeholder="Change people inside">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" id="btn-peopleInside">ok</button>
+            </span>
+          </div>
+          <div> trafic : <b id="peopleInside"> 0 </b> person inside</div>
+        </div>
+
+        <div class="parameter-group">
+          <div class="input-group">
+            <input type="text" id="input-fullness" class="form-control" placeholder="Change fullness">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" id="btn-fullness">ok</button>
+            </span>
+          </div>
+          <div> fullness : <b id="fullness"> 0 </b> person max inside </div>
+        </div>
+
+</div>
+        <script>
+            var socket = io.connect('http://10.0.0.24:8080');
+            socket.on('message', function(mess) {
+                $('#'+mess.content).html(mess.val);
+               socket.emit(mess.content,mess.val);
+            })
+
+            $('#btn-brightness').click(function () {
+              $('#brightness').html($('#input-brightness').val());
+              socket.emit('brightness', $('#input-brightness').val());
+            })
+            $('#btn-peopleInside').click(function () {
+              $('#peopleInside').html($('#input-peopleInside').val());
+              socket.emit('peopleInside', $('#input-peopleInside').val());
+            })
+            $('#btn-fullness').click(function () {
+              $('#fullness').html($('#input-fullness').val());
+              socket.emit('fullness', $('#input-fullness').val());
+            })
+        </script>
+    </body>
+</html>
