@@ -40,11 +40,22 @@ s.addDefaultHandlers()
 # define a message-handler function for the server to call.
 def printing_handler(addr, tags, stuff, source):
     global brightTarget
+    global bright
     if addr=='/light':
         print "New target light ", stuff[0]
         brightTarget = int(stuff[0])
+    if addr=='/getlight':
+        client = OSC.OSCClient()
+        msg = OSC.OSCMessage()
+        msg.setAddress("/getlight")
+        msg.append(bright)
+        client.sendto(msg, (source[0], 8080))
+        msg.clearData()
+        print "Send ",msg, "value: ",bright, source[0]
+
 
 s.addMsgHandler("/light", printing_handler)
+s.addMsgHandler("/getlight", printing_handler)
 
 def main():
     # Start OSCServer

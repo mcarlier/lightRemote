@@ -49,20 +49,26 @@
             var socket = io.connect('http://10.0.0.24:8080');
             socket.on('message', function(mess) {
                 $('#'+mess.content).html(mess.val);
-               socket.emit(mess.content,mess.val);
             })
 
             $('#btn-brightness').click(function () {
-              $('#brightness').html($('#input-brightness').val());
-              socket.emit('brightness', $('#input-brightness').val());
+              if(Number($('#input-brightness').val())){
+                alert("here")
+                $('#brightness').html($('#input-brightness').val());
+                socket.emit('brightness', $('#input-brightness').val());
+              }
             })
             $('#btn-peopleInside').click(function () {
-              $('#peopleInside').html($('#input-peopleInside').val());
-              socket.emit('peopleInside', $('#input-peopleInside').val());
+              if(Number($('#input-peopleInside').val())){
+                $('#peopleInside').html($('#input-peopleInside').val());
+                socket.emit('peopleInside', $('#input-peopleInside').val());
+              }
             })
             $('#btn-fullness').click(function () {
-              $('#fullness').html($('#input-fullness').val());
-              socket.emit('fullness', $('#input-fullness').val());
+              if(Number($('#input-fullness').val())){
+                $('#fullness').html($('#input-fullness').val());
+                socket.emit('fullness', $('#input-fullness').val());
+              }
             })
         </script>
     </body>
