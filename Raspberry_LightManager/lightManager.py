@@ -9,7 +9,7 @@ io.pinMode(1,io.PWM_OUTPUT)
 io.pwmWrite(1,0)
 bright = 0
 brightTarget = 0;
-receive_address = '10.0.0.25', 9001
+receive_address = '10.0.0.44', 9001
 
 io.pwmWrite(1,bright)
 
@@ -22,13 +22,19 @@ def sign(a,b):
 def updateBright():
     # global bright
     # for i in range(bright,newBright,sign(bright,newBright)):
-    #     io.pwmWrite(1,int(newBright*600/100))
+    #     io.pwmWrite(1,int(newBright*1024/100))
     #     time.sleep(0.015)
     # bright = newBright
+    #
+    # io.pwmWrite(1,1024)
+    # time.sleep(1)
+    # io.pwmWrite(1,0)
+    # time.sleep(1)
+
     global bright
     if(bright!=brightTarget):
         bright +=sign(bright,brightTarget)*1
-        io.pwmWrite(1,int(bright*700/100))
+        io.pwmWrite(1,int(bright*1024/100))
         time.sleep(0.015)
 
 
@@ -43,7 +49,10 @@ def printing_handler(addr, tags, stuff, source):
     global bright
     if addr=='/light':
         print "New target light ", stuff[0]
+
         brightTarget = int(stuff[0])
+        if(int(stuff[0])<0):
+            brightTarget = 0;
     if addr=='/getlight':
         client = OSC.OSCClient()
         msg = OSC.OSCMessage()

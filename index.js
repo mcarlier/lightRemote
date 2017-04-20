@@ -2,7 +2,7 @@ var osc = require('node-osc');
 var express = require('express')
 var app = express()
 
-var RaspIP = "10.0.0.25";
+var RaspIP = "10.0.0.44";
 var RaspPort = "9001";
 
 var LocalIP = "0.0.0.0";
@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
       });
     });
     socket.on('fullness',  function(message) {
-      socket.broadcast.emit('message',{ content: 'fullness', val: message });
+      socket.broadcast.emit('message',{ content: 'peopleInside', val: message });
       var client = new osc.Client(LocalIP, parseInt(LocalPort));
       client.send('/fullness', message, function () {
       client.kill();
