@@ -33,6 +33,8 @@
           </div>
           <div> trafic : <b id="peopleInside"> 0 </b> person inside</div>
         </div>
+        <button type="button" id="plus1" class="btn btn-secondary">+1</button>
+        <button type="button" id="minus1" class="btn btn-secondary">-1</button>
 
         <div class="parameter-group">
           <div class="input-group">
@@ -64,6 +66,16 @@
                 socket.emit('peopleInside', $('#input-peopleInside').val());
               }
             })
+            $('#plus1').click(function () {
+              $('#peopleInside').html(parseInt($('#peopleInside').html())+1);
+              socket.emit('peopleInside',parseInt($('#peopleInside').html()));
+            })
+            $('#minus1').click(function () {
+              $('#peopleInside').html(parseInt($('#peopleInside').html())-1);
+              socket.emit('peopleInside', parseInt($('#peopleInside').html()));
+
+            })
+
             $('#btn-fullness').click(function () {
               if(Number($('#input-fullness').val())){
                 $('#fullness').html($('#input-fullness').val());
