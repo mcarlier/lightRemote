@@ -6,7 +6,10 @@
         <title>Light Remote</title>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap-slider.js"></script>
         <script type="text/javascript" src="js/script.js"></script>
+
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
 
@@ -14,6 +17,7 @@
 
     <body>
         <h1 id="title">Light Remote</h1>
+        <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/>
         <div class="parameter-group">
           <div class="input-group">
             <input type="text" id="input-brightness" class="form-control" placeholder="Change brightness">
@@ -46,9 +50,12 @@
           <div> fullness : <b id="fullness"> 0 </b> person max inside </div>
         </div>
 
+        <!-- <p id= "info-mac">connect on : http://<div id="ip"></div>:8080</p> -->
+        <div id="ip"></div>
+
 </div>
         <script>
-            var socket = io.connect('http://10.0.0.11:8080');
+            var socket = io.connect('http://Macintosh.local:8080');
             socket.on('message', function(mess) {
                 $('#'+mess.content).html(mess.val);
             })
