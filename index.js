@@ -57,8 +57,9 @@ io.sockets.on('connection', function (socket) {
           }
 
         }
-        if(rinfo.address==RaspIP){
+        else{
           if(msg[0]=="/getlight"){
+            console.log('get light %s',  msg[1]);
             socket.broadcast.emit('message',{ content: 'brightness', val: msg[1] });
           }
         }
