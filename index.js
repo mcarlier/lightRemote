@@ -7,7 +7,7 @@ var slider = require('bootstrap-slider');
 var RaspIP = "packshot02.local";
 var RaspPort = "9001";
 
-var LocalIP = "Macintosh.local";
+var LocalIP = "localhost";
 var LocalPort = "9001";
 
 var myip = ip.address()
@@ -41,7 +41,7 @@ io.sockets.on('connection', function (socket) {
           if(msg[2][0]=="/light"){
             socket.broadcast.emit('message',{ content: 'brightness', val: msg[2][1] });
             clientRaspberry.send('/light', msg[2][1], function () {
-            console.log('Send /light %s to %s:%s', msg[2][1], RaspIP,RaspPort);
+              console.log('Send /light %s to %s:%s', msg[2][1], RaspIP,RaspPort);
             });
           }
           else if(msg[2][0]=="/data"){
@@ -66,9 +66,14 @@ io.sockets.on('connection', function (socket) {
   });
 
     socket.on('brightness',  function(message) {
-        socket.broadcast.emit('message',{ content: 'brightness', val: message });
+        console.log('Send /light %s to %s:%s', message, RaspIP, RaspPort);
+        // socket.broadcast.emit('message',{ content: 'brightness', val: message });
+        // clientLocal.send('/peopleInside', message, function () {
         clientRaspberry.send('/light', message, function () {
-        console.log('Send /light %s to %s:%s', message, RaspIP,RaspPort);
+          console.log('Send /light %s to %s:%s', message, LocalIP, LocalPort);
+        });
+        clientLocal.send('/light', message, function () {
+          console.log('Send /light %s to %s:%s', message, RaspIP, RaspPort);
         });
 
     });
