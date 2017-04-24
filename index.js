@@ -47,18 +47,18 @@ board.on("ready", function() {
   //   }
   // });
   //
-  // var myTween = new TWEEN.Tween(oTween)
-  //     // .easing(TWEEN.Easing.Cubic.In)
-  //     .to({bright:255}, 2000)
-  //     .onUpdate(function() {
-  //       console.log(this.bright);
-  //       var tmp = Math.round(this.bright);
-  //       if (tmp !== last) {
-  //         led.brightness(tmp);
-  //         last = tmp;
-  //       }
-  //     })
-  //     .start();
+  var myTween = new TWEEN.Tween(oTween)
+      // .easing(TWEEN.Easing.Cubic.In)
+      .to({bright:255}, 2000)
+      .onUpdate(function() {
+        console.log(this.bright);
+        var tmp = Math.round(this.bright);
+        if (tmp !== last) {
+          led.brightness(tmp);
+          last = tmp;
+        }
+      })
+      .start();
   //
   //
   //   function animate() {
