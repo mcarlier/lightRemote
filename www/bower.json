@@ -1,0 +1,20 @@
+{
+  "name": "www",
+  "homepage": "https://github.com/mcarlier/lightRemote",
+  "authors": [
+    "Tom <tom@inoui.io>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-knob": "^1.2.13"
+  }
+}
