@@ -1,25 +1,19 @@
-var osc = require('node-osc');
-var ip = require('ip');
+// var osc = require('node-osc');
 var express = require('express')
 var app = express()
-var slider = require('bootstrap-slider');
+var five = require("johnny-five"),
+  board, button;
 
-var RaspIP = "packshot02.local";
-var RaspPort = "9001";
+var ready = false;
+var led;
 
-var LocalIP = "localhost";
-var LocalPort = "9001";
+var TWEEN = require('tween.js');
+var oTween = {bright:0};
 
-var myip = ip.address()
-
-
-var clientLocal = new osc.Client(LocalIP, parseInt(LocalPort));
-var clientRaspberry = new osc.Client(RaspIP, parseInt(RaspPort));
 
 
 
 app.use(express.static('www'));
-
 var server = app.listen(8080, function () {
 
     var host = server.address().address
@@ -28,80 +22,60 @@ var server = app.listen(8080, function () {
     console.log('Express app listening at http://%s%s', host, port)
 
 })
+var last = 0;
+var board = new five.Board();
+board.on("ready", function() {
+  console.log("READY");
+  led = new five.Led(9);
+  var io = require('socket.io').listen(server);
+  var oTween = {bright:0};
 
-// Chargement de socket.io
-var io = require('socket.io').listen(server);
-
-io.sockets.on('connection', function (socket) {
-
-  getCurrentValue();
-  var oscServer = new osc.Server(8080, '0.0.0.0');
-  oscServer.on("message", function (msg, rinfo) {
-        if(rinfo.address=='127.0.0.1'){
-          if(msg[2][0]=="/light"){
-            socket.broadcast.emit('message',{ content: 'brightness', val: msg[2][1] });
-            clientRaspberry.send('/light', msg[2][1], function () {
-              console.log('Send /light %s to %s:%s', msg[2][1], RaspIP,RaspPort);
-            });
-          }
-          else if(msg[2][0]=="/data"){
-            console.log('get peopleInside %s, fullness %s',msg[2][1],msg[2][2]);
-            socket.broadcast.emit('message',{ content: 'peopleInside', val: msg[2][1] });
-            socket.broadcast.emit('message',{ content: 'fullness', val: msg[2][2] });
-            socket.broadcast.emit('message',{ content: 'ip', val: myip });
-
-          }
-          else if(msg[2][0]=="/peopleInside"){
-            console.log('new peopleInside',  msg[2][1]);
-            socket.broadcast.emit('message',{ content: 'peopleInside', val: msg[2][1] });
-          }
-
-        }
-        else{
-          if(msg[0]=="/getlight"){
-            console.log('get light %s',  msg[1]);
-            socket.broadcast.emit('message',{ content: 'brightness', val: msg[1] });
-          }
-        }
+  led.brightness(last);
+  led.pulse({
+    duration:3000,
+    keyFrames: [220, 240]
   });
 
-    socket.on('brightness',  function(message) {
-        console.log('Send /light %s to %s:%s', message, RaspIP, RaspPort);
-        // socket.broadcast.emit('message',{ content: 'brightness', val: message });
-        // clientLocal.send('/peopleInside', message, function () {
-        clientRaspberry.send('/light', message, function () {
-          console.log('Send /light %s to %s:%s', message, LocalIP, LocalPort);
-        });
-        clientLocal.send('/light', message, function () {
-          console.log('Send /light %s to %s:%s', message, RaspIP, RaspPort);
-        });
+  //
+  // led.pulse({
+  //   easing: "inOutSine",
+  //   duration: 1000,
+  //   cuePoints: [0, 0.2, 0.4, 0.6, 0.8, 1],
+  //   keyFrames: [0, 10, 0, 50, 0, 240],
+  //   onstop: function() {
+  //     console.log("Animation stopped");
+  //   }
+  // });
+  //
+  // var myTween = new TWEEN.Tween(oTween)
+  //     // .easing(TWEEN.Easing.Cubic.In)
+  //     .to({bright:255}, 2000)
+  //     .onUpdate(function() {
+  //       console.log(this.bright);
+  //       var tmp = Math.round(this.bright);
+  //       if (tmp !== last) {
+  //         led.brightness(tmp);
+  //         last = tmp;
+  //       }
+  //     })
+  //     .start();
+  //
+  //
+  //   function animate() {
+  //   // requestAnimationFrame(animate);
+  //     setImmediate(animate);
+  //     TWEEN.update();
+  //   }
+  //   animate();
 
-    });
-
-    socket.on('peopleInside',  function(message) {
-      socket.broadcast.emit('message',{ content: 'peopleInside', val: message });
-      clientLocal.send('/peopleInside', message, function () {
-      console.log('Send /peopleInside %s to %s:%s', message, LocalIP,LocalPort);
+  io.sockets.on('connection', function (socket) {
+      socket.on('brightness',  function(percent) {
+          console.log('Set brightness to %s%', percent);
+          var b = Math.min(Math.round(parseInt(percent)*255/100), 255);
+          var diff = Math.abs(last - b);
+          var speed = diff*2000/255;
+          myTween.stop().to({bright:b}, speed).start();
       });
-    });
-    socket.on('fullness',  function(message) {
-      socket.broadcast.emit('message',{ content: 'peopleInside', val: message });
-      clientLocal.send('/fullness', message, function () {
-        console.log('Send /fullness %s to %s:%s', message, LocalIP,LocalPort);
-      });
-    });
-
-
+  });
+  server.listen(8080);
 });
-
-server.listen(8080);
-
-
-function getCurrentValue() {
-  clientRaspberry.send('/getlight', '', function () {
-  console.log('Send /getlight to %s:%s', RaspIP,RaspPort);
-  });
-  clientLocal.send('/getdata', '', function () {
-    console.log('Send /getdata to %s:%s', LocalIP,LocalPort);
-  });
-}
