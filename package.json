@@ -17,6 +17,7 @@
     "jquery": "^3.2.1",
     "node-osc": "^2.1.0",
     "npm": "^4.5.0",
+    "random-number": "0.0.7",
     "require": "^2.4.20",
     "socket.io": "^1.7.3",
     "tween.js": "^16.6.0"
