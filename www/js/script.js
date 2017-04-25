@@ -3,7 +3,16 @@ $(function() {
 
     var socket = io.connect('http://'+window.location.host);
     socket.on('message', function(mess) {
-        $('#'+mess.content).html(mess.val);
+        if(mess.content=="animation"){
+          $('.animation').removeClass('btn-primary');
+          $('#animation'+mess.val).addClass('btn-primary');
+
+        }
+
+        else{
+          $('#'+mess.content).html(mess.val);
+        }
+
     })
 
     $('#btn-brightness').click(function () {
@@ -43,4 +52,10 @@ $(function() {
         console.log(v);
       }
     });
+    $('.animation').click(function () {
+      $('.animation').removeClass('btn-primary');
+      $(this).addClass('btn-primary')
+      socket.emit('animation', $(this).text());
+
+    })
 });
