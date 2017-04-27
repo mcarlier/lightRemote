@@ -6,56 +6,11 @@
         <title>Light Remote</title>
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-        <script type="text/javascript" src="bower_components/jquery-knob/dist/jquery.knob.min.js"></script>
-
         <script type="text/javascript" src="js/script.js"></script>
-
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
-
+        <script type="text/javascript" src="js/dat.gui.js"></script>
     </head>
 
-    <body>
-        <h1 id="title">Light Remote</h1>
-        <div class="parameter-group">
-          <!-- <div class="input-group">
-            <input type="text" value="0" class="dial">
-          </div> -->
-          <button type="button" id="animation1" class="animation btn btn-secondary btn-primary">1</button>
-          <button type="button" id="animation2" class="animation btn btn-secondary">2</button>
-          <button type="button" id="animation3" class="animation btn btn-secondary">3</button>
-          <button type="button" id="animation4" class="animation btn btn-secondary">4</button>
-          <button type="button" id="animation5" class="animation btn btn-secondary">5</button>
-          <button type="button" id="animation6" class="animation btn btn-secondary">6</button>
-          <div> brightness : <b id="brightness"> 0 </b> % </div>
-        </div>
-
-        <div class="parameter-group">
-          <div class="input-group">
-            <input type="text" id="input-peopleInside" class="form-control" placeholder="Set current occupation">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" id="btn-peopleInside">ok</button>
-            </span>
-          </div>
-          <div> Occupation : <b id="peopleInside"> 0 </b> person(s) inside</div>
-        </div>
-        <button type="button" id="plus1" class="btn btn-secondary">+1</button>
-        <button type="button" id="minus1" class="btn btn-secondary">-1</button>
-
-        <div class="parameter-group">
-          <div class="input-group">
-            <input type="text" id="input-fullness" class="form-control" placeholder="Change capacity">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" id="btn-fullness">ok</button>
-            </span>
-          </div>
-          <div> capacity : <b id="fullness"> 0 </b> person(s) </div>
-        </div>
-
-        <!-- <p id= "info-mac">connect on : http://<div id="ip"></div>:8080</p> -->
-        <div id="ip"></div>
-
+    <body style='text-align: center'>
+      <div id="my-gui-container" style='display: inline-block'></div>
     </body>
 </html>

@@ -1,61 +1,28 @@
-
 $(function() {
+  var socket = io.connect('http://'+window.location.host);
+  var LightRemote = function() {
+      this.animation = '0';
+      this.occupencyRate = 0;
+      this.peopleInside = 0;
+      this.capacity = 0;
+    };
 
-    var socket = io.connect('http://'+window.location.host);
+    var lightRemote = new LightRemote();
+    var gui = new dat.GUI({ autoPlace: false });
+    gui.add(lightRemote, 'animation', [ '0','1', '2', '3','4','5','6' ])
+        .onFinishChange(function(value) { socket.emit('animation', value );});
+    gui.add(lightRemote, 'occupencyRate', 0, 100)
+       .onFinishChange(function(value) { socket.emit('occupencyRate', Math.round(value));});
+    gui.add(lightRemote, 'peopleInside').min(0).step(1)
+       .onFinishChange(function(value) { socket.emit('peopleInside', value );});
+    gui.add(lightRemote, 'capacity').min(0).step(1)
+       .onFinishChange(function(value) { socket.emit('capacity', value );});
+    $('#my-gui-container').append(gui.domElement);
+
     socket.on('message', function(mess) {
-        if(mess.content=="animation"){
-          $('.animation').removeClass('btn-primary');
-          $('#animation'+mess.val).addClass('btn-primary');
-
-        }
-
-        else{
-          $('#'+mess.content).html(mess.val);
-        }
-
-    })
-
-    $('#btn-brightness').click(function () {
-
-      if(Number($('#input-brightness').val())||$('#input-brightness').val()==0){
-        $('#brightness').html($('#input-brightness').val());
-        socket.emit('brightness', $('#input-brightness').val());
+      lightRemote[mess.content] = mess.value;
+      for (var i in gui.__controllers) {
+        gui.__controllers[i].updateDisplay();
       }
-    })
-    $('#btn-peopleInside').click(function () {
-      if(Number($('#input-peopleInside').val())||$('#input-peopleInside').val()==0){
-        $('#peopleInside').html($('#input-peopleInside').val());
-        socket.emit('peopleInside', $('#input-peopleInside').val());
-      }
-    })
-    $('#plus1').click(function () {
-      $('#peopleInside').html(parseInt($('#peopleInside').html())+1);
-      socket.emit('peopleInside',parseInt($('#peopleInside').html()));
-    })
-    $('#minus1').click(function () {
-      $('#peopleInside').html(parseInt($('#peopleInside').html())-1);
-      socket.emit('peopleInside', parseInt($('#peopleInside').html()));
-
-    })
-
-    $('#btn-fullness').click(function () {
-      if(Number($('#input-fullness').val())){
-        $('#fullness').html($('#input-fullness').val());
-        socket.emit('fullness', $('#input-fullness').val());
-      }
-    })
-
-    $(".dial").knob({
-      'release' : function (v) {
-        socket.emit('brightness', v);
-        $('#brightness').html(v);
-        console.log(v);
-      }
-    });
-    $('.animation').click(function () {
-      $('.animation').removeClass('btn-primary');
-      $(this).addClass('btn-primary')
-      socket.emit('animation', $(this).text());
-
     })
 });
