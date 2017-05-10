@@ -11,6 +11,10 @@ var led;
 var peopleInside;
 var fullness;
 
+var isProximity = false;
+var pTm = null;
+
+
 var TWEEN = require('tween.js');
 var oTween = {bright:0};
 var changeButtonAnimation = false;
@@ -63,34 +67,54 @@ board.on("ready", function() {
       // .easing(TWEEN.Easing.Cubic.In)
       .to({bright:255}, 2000)
       .onUpdate(function() {
-        //console.log(this.bright);
         var tmp = Math.round(this.bright);
         if (tmp !== last) {
           led.brightness(tmp);
           last = tmp;
         }
-      })
-      .start();
+      });
 
   //
      function animate() {
      // requestAnimationFrame(animate);
        setImmediate(animate);
-       TWEEN.update();
+       if (isProximity) TWEEN.update();
      }
-     //animate();
+     animate();
 
     io.sockets.on('connection', function (socket) {
 
       getCurrentValue();
+
+
+      if (isProximity) return;
+
       oscServer.on("message", function (msg, rinfo) {
+
+              if(msg[0]=="/proximity"){
+                isProximity = true;
+                animation.stop();
+                // led.brightness(msg[1]);
+                myTween.stop().to({bright:msg[1]}, 400).start();
+                clearTimeout(pTm);
+                pTm = setTimeout(function() {
+                  console.log("TIMEOUT");
+                  isProximity = false;
+                  changeAnimation(Math.floor(Math.random() * 6) + 1);
+                }, 2000);
+                return ;
+              }
+
+              if (isProximity) return;
+
+
               if(msg[2][0]=="/light"){
-              socket.broadcast.emit('message',{ content: 'brightness', val: msg[2][1] });
-              lightPercent = msg[2][1];
-              console.log('new /light %s', lightPercent);
-              changeAnimation(undefined,function(){
-                socket.broadcast.emit('message',{ content: 'animation', val: animationID });
-              });
+                socket.broadcast.emit('message',{ content: 'brightness', val: msg[2][1] });
+                lightPercent = msg[2][1];
+                console.log('new /light %s', lightPercent);
+                changeAnimation(undefined,function(){
+                  socket.broadcast.emit('message',{ content: 'animation', val: animationID });
+                });
               }
               else if(msg[2][0]=="/data"){
                 console.log('get peopleInside %s, fullness %s',msg[2][1],msg[2][2]);
@@ -103,7 +127,7 @@ board.on("ready", function() {
               else if(msg[2][0]=="/peopleInside"){
                 console.log('new peopleInside',  msg[2][1]);
                 socket.broadcast.emit('message',{ content: 'peopleInside', val: msg[2][1] });
-                if((peopleInside<msg[2][1])&&peopleInside%3==0){
+                if((peopleInside<msg[2][1])&&peopleInside%2==0){
                   console.log("FLASH");
                   animationNewPeople();
                 }
