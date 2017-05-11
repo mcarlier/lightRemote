@@ -7,7 +7,7 @@ var peopleInside = 0;
 var capacity = 10;
 var TWEEN = require('tween.js');
 var oscServer = new osc.Server(8080, '0.0.0.0');
-var client = new osc.Client('Macintosh.local', 9001);
+//var client = new osc.Client('Macintosh.local', 9001);
 
 app.use(express.static('www'));
 var server = app.listen(8080, function () {
@@ -18,7 +18,6 @@ var server = app.listen(8080, function () {
 
 var last = 255;
 var board = new five.Board();
-var firstSocket = null;
 board.on("ready", function() {
   console.log("READY");
   led = new five.Led(9);
@@ -42,37 +41,35 @@ board.on("ready", function() {
        TWEEN.update();
      }
      animate();
-     client.send('/getPeopleInside', '');
+     //client.send('/getPeopleInside', '');
 
     io.sockets.on('connection', function (socket) {
       console.log("connection socket");
-      if (firstSocket==null){firstSocket = socket}
+      socket.emit('message',{ content: 'peopleInside', val: peopleInside });
 
-      client.send('/getPeopleInside', '');
+      //client.send('/getPeopleInside', '');
 
       socket.on('peopleInside',  function(message) {
-        peopleInside = Math.max(message,0); 
-        client.send('/peopleInside', peopleInside);
+        peopleInside = Math.max(message,0);
+        //client.send('/peopleInside', peopleInside);
+        socket.broadcast.emit('message',{ content: 'peopleInside', val: peopleInside });
+        socket.broadcast.emit('dataMusic',{peopleInside: peopleInside, capacity: capacity});
         console.log('update peopleInside from Remote : ',peopleInside);
-        updatePeopleInside()
+        updatePeopleInside();
       });
     });
     server.listen(8080);
 
    oscServer.on("message", function (msg, rinfo) {
-        if(msg[2][0]=="/peopleInside"){
-          peopleInside = msg[2][1];
-          updatePeopleInside()
-          console.log('update peopleInside from Footfall : ',peopleInside);
+        if(msg[2][0]=="/updatePeopleInside"){
+          peopleInside += msg[2][1];
+          updatePeopleInside();
+          console.log('update peopleInside from Footfall : ', peopleInside);
         }
     });
 
     function updatePeopleInside(){
         var b = 255 - Math.min(Math.round(peopleInside*255/10), 255);
         myTween.stop().to({bright:b},1000).start();
-    if(firstSocket!=null){
-        firstSocket.broadcast.emit('message',{ content: 'peopleInside', val: peopleInside });
-        firstSocket.broadcast.emit('dataMusic',{peopleInside: peopleInside, capacity: capacity});
-      }
     }
 });
