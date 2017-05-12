@@ -5,8 +5,10 @@ $(function() {
     })
     $('#btn-peopleInside').click(function () {
       if(Number($('#input-peopleInside').val())||$('#input-peopleInside').val()==0){
-        $('#peopleInside').html($('#input-peopleInside').val());
-        socket.emit('peopleInside', $('#input-peopleInside').val());
+        if(parseInt($('#input-peopleInside').val())>=0){
+          $('#peopleInside').html($('#input-peopleInside').val());
+          socket.emit('peopleInside', $('#input-peopleInside').val());
+        }
       }
     })
     $('#plus1').click(function () {
@@ -14,7 +16,9 @@ $(function() {
       socket.emit('peopleInside',parseInt($('#peopleInside').html()));
     })
     $('#minus1').click(function () {
-      $('#peopleInside').html(parseInt($('#peopleInside').html())-1);
-      socket.emit('peopleInside', parseInt($('#peopleInside').html()));
+      if($('#peopleInside').html()>0){
+        $('#peopleInside').html(parseInt($('#peopleInside').html())-1);
+        socket.emit('peopleInside', parseInt($('#peopleInside').html()));
+      }
     })
 });
